@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components'
 
@@ -39,20 +39,51 @@ const SIGNUP = gql`
   }
 `
 
+const AUTO_LOGIN = gql`
+  mutation AutoLogin($token: String!){
+    autoLogin(token:$token) {  
+      id
+      username
+    }
+  }
+
+`
+
 function App() {
 
   const {  data , loading, error } = useQuery(USERS_QUERY)
   
   const [ currentUser, setCurrentUser ] = useState(null)
 
-  // If the app loads and there's a token in local storage, attempt to log in.
-    // On success, set current user.
-    // On failure, clear local storage.
+
+  const [ autoLogin ] = useMutation(AUTO_LOGIN, {onCompleted: ({autoLogin: user}) =>  setCurrentUser(user) } )
+
+  
+  useEffect(() => {
+    const loginToken = localStorage.getItem('login-token')
+
+    // On failure, clear localstorag
+
+    if (loginToken) {
+      autoLogin({variables: {token: loginToken}})
+    }
+  }, [])
+
+
+
+  const [ login ] = useMutation(LOGIN, {
+    onCompleted: ({login: {token, user}}) => {
+
+      // Handle login fail case
+
+      localStorage.setItem('login-token', token)
+      setCurrentUser(user)
+    }
+  })
 
 
 
 
-  const [ login ] = useMutation(LOGIN, {onCompleted: ({login: {token, user}}) => setCurrentUser(user)})
 
   const defaultLogin = {username: "", password: ""}
 
@@ -69,6 +100,9 @@ function App() {
 
   const [ signup ] = useMutation(SIGNUP, {
     onCompleted: data => {
+
+      // Handle signup fail case
+
       const { user, token } = data?.signup
       setCurrentUser(user)
     },
