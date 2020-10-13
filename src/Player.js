@@ -4,7 +4,7 @@ const Player = () => {
 
     const [ player, setPlayer ] = useState(null)
 
-    const token = ""
+    const token = ``
 
     useEffect(() => {
 

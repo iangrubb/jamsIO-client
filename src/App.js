@@ -6,6 +6,10 @@ import Player from './Player'
 
 import { gql, useQuery, useMutation } from '@apollo/client';
 
+import { Switch, Route } from 'react-router-dom'
+
+import AuthResponse from './authentication/AuthResponse'
+
 const USERS_QUERY = gql`
   query {
     users {
@@ -42,8 +46,11 @@ const SIGNUP = gql`
 const AUTO_LOGIN = gql`
   mutation AutoLogin($token: String!){
     autoLogin(token:$token) {  
-      id
-      username
+      user {
+        id
+        username
+      }
+      authUrl  
     }
   }
 
@@ -51,18 +58,26 @@ const AUTO_LOGIN = gql`
 
 function App() {
 
-  const {  data , loading, error } = useQuery(USERS_QUERY)
+  const { data , loading, error } = useQuery(USERS_QUERY)
   
   const [ currentUser, setCurrentUser ] = useState(null)
 
+  const [ spotifyUrl, setSpotifyUrl ] = useState(null) 
 
-  const [ autoLogin ] = useMutation(AUTO_LOGIN, {onCompleted: ({autoLogin: user}) =>  setCurrentUser(user) } )
 
+  // Auto login logic
+
+  const [ autoLogin ] = useMutation(AUTO_LOGIN, {
+    onCompleted: ({autoLogin: { user, authUrl }}) => {
+      setSpotifyUrl(authUrl)
+      setCurrentUser(user)
+    }  
+  })
   
   useEffect(() => {
     const loginToken = localStorage.getItem('login-token')
 
-    // On failure, clear localstorag
+    // On failure, clear localstorage
 
     if (loginToken) {
       autoLogin({variables: {token: loginToken}})
@@ -70,20 +85,18 @@ function App() {
   }, [])
 
 
+  // Manual login logic
 
   const [ login ] = useMutation(LOGIN, {
-    onCompleted: ({login: {token, user}}) => {
+    onCompleted: ({login: {token, user, authUrl}}) => {
 
       // Handle login fail case
 
       localStorage.setItem('login-token', token)
+      setSpotifyUrl(authUrl)
       setCurrentUser(user)
     }
   })
-
-
-
-
 
   const defaultLogin = {username: "", password: ""}
 
@@ -98,12 +111,16 @@ function App() {
   }
 
 
+
+  // Signup logic
+
   const [ signup ] = useMutation(SIGNUP, {
     onCompleted: data => {
 
       // Handle signup fail case
 
-      const { user, token } = data?.signup
+      const { user, token, authUrl } = data?.signup
+      setSpotifyUrl(authUrl)
       setCurrentUser(user)
     },
     update: (cache, {data: {signup: { user }}}) => {
@@ -142,30 +159,56 @@ function App() {
 
   return (
     <div>
-      <NameList>
-        {data?.users.map(user => <Name key={user.id} current={user.id === currentUser?.id}>{user.username}</Name>)}
-      </NameList>
-      <Box>
-        <h2>Sign Up</h2>
-        <form onSubmit={submitSignup}>
-          <label>Name</label>
-          <input name="username" type="textfield" value={signupState.username} onChange={updateSignupForm} />
-          <label>Password</label>
-          <input name="password" type="password" value={signupState.password} onChange={updateSignupForm} />
-          <input type="submit"/>
-        </form>
-      </Box>
+      <Switch>
 
-      <Box>
-        <h2>Log In</h2>
-        <form onSubmit={submitLogin}>
-          <label>Name</label>
-          <input name="username" type="textfield" value={loginState.username} onChange={updateLoginForm} />
-          <label>Password</label>
-          <input name="password" type="password" value={loginState.password} onChange={updateLoginForm} />
-          <input type="submit"/>
-        </form>
-      </Box>
+        <Route path="/authentication-response" render={routerProps => <AuthResponse routerProps={routerProps}/>} />
+
+        <Route path="/" render={ routerProps => (
+          <>
+            <NameList>
+            {data?.users.map(user => <Name key={user.id} current={user.id === currentUser?.id}>{user.username}</Name>)}
+            </NameList>
+      
+            {currentUser ?
+            <Box>
+              <h3>Current User Info</h3>
+              <p>{currentUser.username}</p>
+              <button>Log Out</button>
+      
+              <h4>Spotify Account Connection</h4>
+      
+              <a href={spotifyUrl}>Connect</a>
+            </Box>
+            : null}
+            
+            <Box>
+              <h2>Sign Up</h2>
+              <form onSubmit={submitSignup}>
+                <label>Name</label>
+                <input name="username" type="textfield" value={signupState.username} onChange={updateSignupForm} />
+                <label>Password</label>
+                <input name="password" type="password" value={signupState.password} onChange={updateSignupForm} />
+                <input type="submit"/>
+              </form>
+            </Box>
+      
+            <Box>
+              <h2>Log In</h2>
+              <form onSubmit={submitLogin}>
+                <label>Name</label>
+                <input name="username" type="textfield" value={loginState.username} onChange={updateLoginForm} />
+                <label>Password</label>
+                <input name="password" type="password" value={loginState.password} onChange={updateLoginForm} />
+                <input type="submit"/>
+              </form>
+            </Box>
+          </>
+        )}/>
+      </Switch>
+
+
+
+      
 
       
 

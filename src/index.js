@@ -10,9 +10,7 @@ import {
   BrowserRouter as Router
 } from "react-router-dom";
 
-
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql'
@@ -27,7 +25,6 @@ const authLink = setContext((_, { headers }) => {
     }
   }
 })
-
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
