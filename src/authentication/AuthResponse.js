@@ -2,15 +2,19 @@ import React, { useEffect } from 'react'
 
 import { gql, useMutation } from '@apollo/client';
 
+import { setSpotifyTokens } from './spotifyTokens'
+
 const AUTHENTICATE = gql`
   mutation AuthenticateSpotify($code:String!) {
     authenticateSpotify(code: $code) {
       accessToken
       refreshToken
-      expiresIn
+      expiresAt
     }
   }
 `
+
+// Check to see if there is already a refresh token when this gets rendered. If so, the user may be navigating weirdly and we don't want to attempt to reset the token.
 
 const AuthResponse = ({ routerProps }) => {
 
@@ -21,8 +25,8 @@ const AuthResponse = ({ routerProps }) => {
     }, {})
 
     const [ authenticate ] = useMutation(AUTHENTICATE, {
-        onCompleted: resp => {
-            console.log(resp)
+        onCompleted: ({authenticateSpotify: data}) => {
+            setSpotifyTokens(data)
             routerProps.history.push('/')
         }
     })
@@ -30,8 +34,6 @@ const AuthResponse = ({ routerProps }) => {
     useEffect(()=>{
         authenticate({variables: {code: spotifyData.code}})
     }, [])
-
-
 
     return (
         <div>

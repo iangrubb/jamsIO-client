@@ -6,6 +6,8 @@ import App from './App';
 import { createHttpLink } from 'apollo-link-http'
 import { setContext } from 'apollo-link-context'
 
+import { getAccessToken } from './authentication/spotifyTokens'
+
 import {
   BrowserRouter as Router
 } from "react-router-dom";
@@ -18,10 +20,12 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
   const loginToken = localStorage.getItem('login-token')
+  const accessToken = getAccessToken()
   return {
     headers: {
       ...headers,
-      authorization: loginToken ? `Bearer ${loginToken}` : ''
+      authorization: loginToken ? `Bearer ${loginToken}` : '',
+      "X-access-token": accessToken ? accessToken : ''
     }
   }
 })
