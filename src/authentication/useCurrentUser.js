@@ -2,60 +2,45 @@ import React, { useState, useEffect } from 'react'
 
 import { gql, useMutation } from '@apollo/client';
 
+import { getLoginToken, clearTokens } from './tokenHandlers'
+
 const AUTO_LOGIN = gql`
-  mutation AutoLogin($token: String!){
-    autoLogin(token:$token) {  
-      user {
+  mutation AutoLogin {
+    autoLogin {   
         id
         username
-      }
-      authUrl  
     }
   }
-
 `
 
-const useCurrentUser = () => {
+const useCurrentUser = (makeTokensUnavailable) => {
 
     const foundLoginToken = !!localStorage.getItem('login-token')
 
-    const [ userFetch, setUserFetch ] = useState({loading: foundLoginToken, user: null})
+    const [ userFetch, setUserFetch ] = useState({userLoading: foundLoginToken, user: null})
 
     const [ autoLogin ] = useMutation(AUTO_LOGIN, {
-        onCompleted: ({autoLogin: { user, authUrl }}) => {
-    
-        // setCurrentUser(user)
+        onCompleted: ({autoLogin: user }) => {
+            // Handle case for user not found
+            setUserFetch({userLoading: false, user})
         }  
     })
     
     useEffect(() => {
-        const loginToken = localStorage.getItem('login-token')
-
-        // On failure, clear localstorage
+        const loginToken = getLoginToken()
 
         if (loginToken) {
-            autoLogin({variables: {token: loginToken}})
+            autoLogin()
         }
     }, [])
 
-
-
-
-   
-
-
     const logout = () => {
-         // Clear current user state
-        // Clear all tokens, including those from spotify
-
+        clearTokens()
+        makeTokensUnavailable()
+        setUserFetch({userLoading: false, user: null})
     }
 
-
-    return { user: userFetch.user, loading: userFetch.loading, logout }
-    
-
-
-
+    return { ...userFetch , logout }
 
 }
 

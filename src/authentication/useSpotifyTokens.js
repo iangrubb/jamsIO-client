@@ -1,9 +1,11 @@
 
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 import { gql, useMutation } from '@apollo/client';
 
-
+import { getAccessToken, getAccessTokenExpiration, getRefreshToken, refreshSpotifyTokens, setSpotifyTokens } from './tokenHandlers'
 
 const REFRESH = gql`
     mutation RefreshSpotify($token: String!){
@@ -14,33 +16,78 @@ const REFRESH = gql`
     }
 `
 
-
 const useSpotifyTokens = () => {
 
-    // Should expose a function to say that new tokens are available, which can be called from the authResponse component
+    const refreshToken = getRefreshToken()
+
+    const expiration = getAccessTokenExpiration()
+    const expirationBuffer = 5 * 60 * 1000
+    const refreshAfter = expiration - Date.now() - expirationBuffer
+
+    const needInitialRefresh = refreshAfter <= 0 && !!refreshToken
+
+    const [ tokensAvailable, setTokensAvailable ] = useState(!!refreshToken && !needInitialRefresh)
+    
+    const [ initialRefresh ] = useMutation(REFRESH, {onCompleted: ({refreshSpotify: data}) => {
+        console.log("init", data)
+        refreshSpotifyTokens(data)
+        setTokensAvailable(true)
+    }})
+
+    useEffect(() => {
+        if (needInitialRefresh) {
+            initialRefresh({variables: { token: getRefreshToken()}})
+        }
+    }, [initialRefresh])
 
 
 
-    // const [ refreshToken ] = useMutation(REFRESH, {onCompleted: console.log})
 
+    const [ refreshTimeout, setRefreshTimeout ] = useStateWithCallbackLazy("NONE")
 
+    const [ refresh ] = useMutation(REFRESH, {onCompleted: ({refreshSpotify: data}) => {
+        refreshSpotifyTokens(data)
+        setRefreshTimeout("NONE")
+    }})
 
+    useEffect(() => {
 
-    // All of this should only happen when there's actually a user logged in.
+        if (tokensAvailable && refreshTimeout === "NONE") {
 
+            const expiration = getAccessTokenExpiration()
+            const expirationBuffer = 5 * 60 * 1000
+            const refreshAfter = expiration - Date.now() - expirationBuffer
+           
+            const timeoutId = setTimeout(() => {
+                
+                setRefreshTimeout(timeoutId, ()=>{
+                    refresh({variables: { token: getRefreshToken()}})
+                })
+            }, refreshAfter)
+            console.log("Set refresh timer for ", refreshAfter / 1000 , " seconds")
+            
+        } else if (!tokensAvailable && refreshTimeout !== "NONE" ) {
+            clearTimeout(refreshTimeout)
+            setRefreshTimeout("NONE")
+        }
 
+        return () => {
+            if (refreshTimeout !== "NONE") {
+                clearTimeout(refreshTimeout)
+            }
+        }
+    }, [tokensAvailable, refreshTimeout, refresh])
 
-    // On load, check to see whether there are the right tokens in local storage.
+    const saveTokens = tokens => {
+        setSpotifyTokens(tokens)
+        setTokensAvailable(true)
+    }
 
-    // If so, set a timeout to refresh them at the right time.
+    const makeTokensUnavailable = () => {
+        setTokensAvailable(false)
+    }
 
-    // When the timeout triggers, it should change state and hit the use effect again, setting a new trigger.
-
-    // Make sure to clear timer on dismount or on logout.
-
-    // Return value of stored tokens, ability to log in to spotify, abilty to log out of spotify.
-
-
+    return { tokensAvailable, saveTokens, makeTokensUnavailable }
 
 }
 

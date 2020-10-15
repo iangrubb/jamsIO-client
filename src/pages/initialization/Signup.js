@@ -4,15 +4,14 @@ import LoginForm from './components/LoginForm'
 
 import { gql, useMutation } from '@apollo/client';
 
+import { setLoginToken } from '../../authentication/tokenHandlers'
+
 
 const SIGNUP = gql`
   mutation Signup($username:String!, $password:String!) {
     signup(username:$username, password:$password) {
-      user {
-        id
-        username
-      }
       token
+      authUrl
     }
   }
 `
@@ -20,38 +19,13 @@ const SIGNUP = gql`
 const Signup = () => {
 
     const [ signup ] = useMutation(SIGNUP, {
-        onCompleted: data => {
+        onCompleted: ({signup: { token, authUrl}}) => {
 
-        // Handle signup fail case
-
-        const { user, token, authUrl } = data?.signup
-
-            // NEW: Push to spotify url
-            //  setSpotifyUrl(authUrl)
+        // Handle signup fail case (non-unique name)
+          setLoginToken(token)
+          window.location.href = authUrl
 
 
-            // Wont have to bother setting current user, just set the token and redirect to spotify
-
-
-        },
-        update: (cache, {data: {signup: { user }}}) => {
-
-        // Modify in case of error?
-        
-        cache.modify({fields: {
-            users: (existingUsers = []) => {
-            const userRef = cache.writeFragment({
-                data: user,
-                fragment: gql`
-                fragment NewUser on User {
-                    id
-                    username
-                }
-                `
-            })
-            return [...existingUsers, userRef]
-            }
-        }})
         }
     })
 

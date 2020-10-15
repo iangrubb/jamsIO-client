@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import styled from 'styled-components'
 
 import { Switch, Route, Redirect } from 'react-router-dom'
 
 import AuthResponse from './authentication/AuthResponse'
-
-import { getAccessToken, getRefreshToken, clearSpotifyTokens } from './authentication/spotifyTokens'
 
 import useCurrentUser from './authentication/useCurrentUser'
 import useSpotifyTokens from './authentication/useSpotifyTokens'
@@ -19,18 +17,15 @@ import Signup from './pages/initialization/Signup'
 
 function App() {
 
-  const { user, userLoading, logout } = useCurrentUser()
+  const { tokensAvailable, saveTokens, makeTokensUnavailable } = useSpotifyTokens()
 
-  const { tokensAvailable, saveTokens } = useSpotifyTokens()
+  const { user, userLoading, logout } = useCurrentUser(makeTokensUnavailable)
 
-  // We actually need three states:
-    // Main App: user exists and tokens available
-    // Redirect: no user and user isn't loading
-    // Loading: all other cases
-  
   const determineAccess = () => {
     if (user && tokensAvailable) {
-      return <div>All the content</div> 
+      return <div>
+        <button onClick={logout}>logout</button>
+      </div> 
     } else if (!user && !userLoading) {
       return <Redirect to="/welcome" />
     } else {
@@ -38,33 +33,25 @@ function App() {
     }
   }
 
+  console.log({ user, userLoading, tokensAvailable })
+
   return (
     <div>
       <Switch>
 
-        <Route path="/authentication-response" render={routerProps => <AuthResponse routerProps={routerProps}/>} />
+        <Route path="/authentication-response" render={routerProps =>
+          <AuthResponse routerProps={routerProps} saveTokens={saveTokens} />
+        }/>
 
         <Route path="/welcome" component={Landing} />
 
-        <Route path="/login" render={()=><Login />} />
+        <Route path="/login" component={Login} />
 
-        <Route path="/signup" render={()=><Signup />} />
+        <Route path="/signup" component={Signup} />
 
-        <Route path="/" render={ routerProps => (
-          <>
-            {false ? 
-            <div>All the content</div> :
-            <Redirect to="/welcome" />
-            }
-          </>
-        )}/>
+        <Route path="/" render={determineAccess}/>
+
       </Switch>
-
-
-
-      
-
-      
 
     </div>
   );

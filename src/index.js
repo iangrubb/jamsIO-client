@@ -6,7 +6,7 @@ import App from './App';
 import { createHttpLink } from 'apollo-link-http'
 import { setContext } from 'apollo-link-context'
 
-import { getAccessToken } from './authentication/spotifyTokens'
+import { getAccessToken } from './authentication/tokenHandlers'
 
 import {
   BrowserRouter as Router

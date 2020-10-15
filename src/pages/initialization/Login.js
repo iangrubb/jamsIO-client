@@ -1,17 +1,16 @@
 import React from 'react'
 
-import { gql, useQuery, useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
+
+import { setLoginToken } from '../../authentication/tokenHandlers'
 
 import LoginForm from './components/LoginForm'
 
 const LOGIN = gql`
   mutation Login($username:String!, $password:String!) {
     login(username:$username, password:$password) {
-      user {
-        id
-        username
-      }
       token
+      authUrl
     }
   }
 `
@@ -19,20 +18,13 @@ const LOGIN = gql`
 const Login = () => {
 
     const [ login ] = useMutation(LOGIN, {
-        onCompleted: ({login: {token, user, authUrl}}) => {
+        onCompleted: ({login: {token, authUrl}}) => {
+      
+          // Handle login fail cases
+
+          setLoginToken(token)
+          window.location.href = authUrl
     
-          // Handle login fail case
-    
-        //   localStorage.setItem('login-token', token)
-
-            // NEW: redirect using url
-        //   setSpotifyUrl(authUrl)
-
-
-
-        // Wont have to bother setting current user, just set the token and redirect to spotify
-
-
         }
     })
 
