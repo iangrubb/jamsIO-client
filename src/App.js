@@ -13,9 +13,13 @@ import Landing from './pages/initialization/Landing'
 import Login from './pages/initialization/Login'
 import Signup from './pages/initialization/Signup'
 
-
+import MainSite from './siteStructure/MainSite'
 
 function App() {
+
+  // const { data } = useQuery(SEARCH_SONGS, {variables: { searchTerm: "Beef" }})
+
+  // console.log(data)
 
   const { tokensAvailable, saveTokens, makeTokensUnavailable } = useSpotifyTokens()
 
@@ -23,17 +27,13 @@ function App() {
 
   const determineAccess = () => {
     if (user && tokensAvailable) {
-      return <div>
-        <button onClick={logout}>logout</button>
-      </div> 
+      return <MainSite />
     } else if (!user && !userLoading) {
       return <Redirect to="/welcome" />
     } else {
       return <div>Loading...</div>
     }
   }
-
-  console.log({ user, userLoading, tokensAvailable })
 
   return (
     <div>
