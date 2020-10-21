@@ -9,10 +9,10 @@ import Dashboard from '../pages/dashboard/Dashboard'
 import Jams from '../pages/dashboard/Jams'
 import EditJams from '../pages/dashboard/EditJams'
 
-const MainSite = () => {
+const MainSite = ({ logout }) => {
     return (
         <>
-        <NavBar/>
+        <NavBar logout={logout} />
         <Main>
             <Switch>
                 <Route path="/jams/edit" component={EditJams} />

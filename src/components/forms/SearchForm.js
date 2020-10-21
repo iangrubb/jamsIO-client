@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 
 import styled from 'styled-components'
 
+import { button } from '../../styles/css'
+
 const SearchForm = ({ submitData }) => {
 
     const [formValue, setFormValue] = useState("")
@@ -17,7 +19,7 @@ const SearchForm = ({ submitData }) => {
     return (
         <Container onSubmit={submitHandler}>
             <TextInput name="searchTerm" type="textfield" value={formValue} onChange={handleChange} />
-            <SubmitButton type="submit" value="SUBMIT"/>
+            <SubmitButton type="submit" value="Submit"/>
         </Container>
     )
 }
@@ -26,6 +28,7 @@ export default SearchForm
 
 const Container = styled.form`
     display: flex;
+    align-items: center;
 `
 
 const TextInput = styled.input`
@@ -37,15 +40,5 @@ const TextInput = styled.input`
 `
 
 const SubmitButton = styled.input`
-    background: var(--green);
-    border: none;
-    border-radius: 32px;
-    padding: 0 1rem;
-
-    cursor: pointer;
-
-    color: var(--white);
-    font-size: 14px;
-    font-weight: 700;
-    font-family: var(--display-font);
+    ${button}
 `

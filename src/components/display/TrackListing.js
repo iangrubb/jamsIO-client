@@ -2,9 +2,19 @@ import React from 'react'
 
 import styled, { css } from 'styled-components'
 
+import { Button } from '../../styles/components'
+
 const TrackListing = ({ name, album: { mediumImageUrl }, artists, buttons }) => {
-    console.log(artists)
     const artistNames = artists.map(artist => artist.name).join(', ')
+    
+    const renderButton = b => (
+        <Button
+            key={b.label}
+            inactive={b.inactive}
+            onClick={b.inactive ? null : b.clickHandler}>{b.label}
+        </Button>
+    )
+    
     return (
         <Container>
             <AlbumArt src={mediumImageUrl} alt={name}/>
@@ -13,10 +23,11 @@ const TrackListing = ({ name, album: { mediumImageUrl }, artists, buttons }) => 
                 <Artists>{artistNames}</Artists>
                 
             </ContentRegion>
+            { buttons?.length > 0 ?
             <ButtonRegion>
-                <button>first</button>
-                <button>second</button>
+                {buttons.map(renderButton)}
             </ButtonRegion>
+            : null}
             
         </Container>
     )

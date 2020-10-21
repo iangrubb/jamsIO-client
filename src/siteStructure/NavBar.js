@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom'
 
 import styled from 'styled-components'
 
+import { Button } from '../styles/components'
 
-
-const NavBar = () => {
+const NavBar = ({ logout }) => {
     return (
         <Container>
             <Title>Jams.IO</Title>
@@ -13,6 +13,7 @@ const NavBar = () => {
                 <Link to="/">Home</Link>
                 <Link to="/jams">Jams</Link>
                 <Link to="/jams/edit">Edit Jams</Link>
+                <Button onClick={logout}>Logout</Button>
             </Links>
         </Container>
     )
@@ -35,6 +36,7 @@ const Title = styled.h1`
     margin: 1rem;
 
 `
+
 
 const Links = styled.nav`
     display: flex;
