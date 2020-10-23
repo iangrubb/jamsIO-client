@@ -1,11 +1,11 @@
 import React from 'react'
 
-// Only wor
+
 
 const UserSearch = () => {
     return (
         <div>
-            
+            Search then list users
         </div>
     )
 }

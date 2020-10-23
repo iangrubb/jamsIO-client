@@ -10,7 +10,6 @@ import SearchForm from '../../components/forms/SearchForm'
 import TrackListing from '../../components/display/TrackListing'
 
 
-
 const TRACK_INFO = gql`
     fragment TrackInfo on Track {
         id

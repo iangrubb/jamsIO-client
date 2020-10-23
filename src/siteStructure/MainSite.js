@@ -31,4 +31,5 @@ const Main = styled.main`
     flex-direction: column;
     align-items: center;
     width: 100vw;
+    margin-top: 80px;
 `

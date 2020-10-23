@@ -11,29 +11,42 @@ const NavBar = ({ logout }) => {
             <Title>Jams.IO</Title>
             <Links>
                 <Link to="/">Home</Link>
-                <Link to="/jams">Jams</Link>
-                <Link to="/jams/edit">Edit Jams</Link>
-                <Button onClick={logout}>Logout</Button>
+                <Link to="/jams/edit">Jams</Link>  
+                <Link to="/users" >Users</Link>
+                <Link to="/playlist">Playlists</Link>
+                <Link to="/radio">Radio</Link>                
             </Links>
+            <Button onClick={logout}>Logout</Button>
         </Container>
     )
 }
 
+
+
+
+
 export default NavBar
 
 const Container = styled.header`
+
+    position: fixed;
+    top: 0;
+
     display: flex;
+    justify-content: center;
     align-items: center;
 
-    height: 80px;
-    background: #191414;
+    height: 60px;
+    width: 100vw;
+
+    border-bottom: solid 4px var(--green);
 `
 
 const Title = styled.h1`
 
     font-weight: 900;
     color: white;
-    margin: 1rem;
+    margin: 0;
 
 `
 
@@ -41,11 +54,27 @@ const Title = styled.h1`
 const Links = styled.nav`
     display: flex;
     align-items: center;
+    height: 100%;
+    margin: 0 3rem;
 `
 
 const Link = styled(NavLink)`
     color: white;
     text-decoration: none;
-    margin: 1rem;
+    
     font-size: 20px;
+
+    padding: 0.2rem 0.8rem;
+
+
+    margin: 4px 0.4rem 0 0.4rem;
+    border-bottom: solid 4px var(--black);
+
+    &:hover {
+        border-bottom: solid 4px var(--green);
+    }
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `
