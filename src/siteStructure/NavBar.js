@@ -12,8 +12,8 @@ const NavBar = ({ logout }) => {
             <Links>
                 <Link to="/">Home</Link>
                 <Link to="/jams/edit">Jams</Link>  
-                <Link to="/users" >Users</Link>
-                <Link to="/playlist">Playlists</Link>
+                <Link to="/users" >Social</Link>
+                <Link to="/playlist">Playlist</Link>
                 <Link to="/radio">Radio</Link>                
             </Links>
             <Button onClick={logout}>Logout</Button>
@@ -22,15 +22,14 @@ const NavBar = ({ logout }) => {
 }
 
 
-
-
-
 export default NavBar
 
 const Container = styled.header`
 
     position: fixed;
     top: 0;
+
+    background: var(--black);
 
     display: flex;
     justify-content: center;
@@ -49,7 +48,6 @@ const Title = styled.h1`
     margin: 0;
 
 `
-
 
 const Links = styled.nav`
     display: flex;

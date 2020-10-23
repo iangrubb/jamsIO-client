@@ -19,7 +19,7 @@ const SearchForm = ({ submitData }) => {
     return (
         <Container onSubmit={submitHandler}>
             <TextInput name="searchTerm" type="textfield" value={formValue} onChange={handleChange} />
-            <SubmitButton type="submit" value="Submit"/>
+            <SubmitButton type="submit" value="Search"/>
         </Container>
     )
 }

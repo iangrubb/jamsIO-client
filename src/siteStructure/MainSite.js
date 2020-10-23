@@ -8,6 +8,7 @@ import NavBar from './NavBar'
 import Dashboard from '../pages/dashboard/Dashboard'
 import Jams from '../pages/dashboard/Jams'
 import EditJams from '../pages/dashboard/EditJams'
+import UserSearch from '../pages/browse/UserSearch'
 
 const MainSite = ({ logout }) => {
     return (
@@ -15,6 +16,7 @@ const MainSite = ({ logout }) => {
         <NavBar logout={logout} />
         <Main>
             <Switch>
+                <Route path="/users" component={UserSearch}/>
                 <Route path="/jams/edit" component={EditJams} />
                 <Route path="/jams" component={Jams} />
                 <Route path="/" component={Dashboard} />   

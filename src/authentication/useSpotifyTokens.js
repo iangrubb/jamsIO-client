@@ -5,7 +5,7 @@ import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 import { gql, useMutation } from '@apollo/client';
 
-import { getAccessToken, getAccessTokenExpiration, getRefreshToken, refreshSpotifyTokens, setSpotifyTokens } from './tokenHandlers'
+import { getAccessTokenExpiration, getRefreshToken, refreshSpotifyTokens, setSpotifyTokens } from './tokenHandlers'
 
 const REFRESH = gql`
     mutation RefreshSpotify($token: String!){
