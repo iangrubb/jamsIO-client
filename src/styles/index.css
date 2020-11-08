@@ -27,5 +27,7 @@ code {
 }
 
 h1, h2, h3, h4, h5, h6 {
+  color: var(--white);
   font-family: var(--display-font);
+  margin: 0 0 4px 0;
 }

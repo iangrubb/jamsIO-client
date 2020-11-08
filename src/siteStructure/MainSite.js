@@ -9,6 +9,7 @@ import Dashboard from '../pages/dashboard/Dashboard'
 import Jams from '../pages/dashboard/Jams'
 import EditJams from '../pages/dashboard/EditJams'
 import UserSearch from '../pages/browse/UserSearch'
+import UserShow from '../pages/browse/UserShow'
 
 const MainSite = ({ logout }) => {
     return (
@@ -16,6 +17,9 @@ const MainSite = ({ logout }) => {
         <NavBar logout={logout} />
         <Main>
             <Switch>
+                <Route path="/users/:id" render={props => (
+                    <UserShow id={props.match.params.id}/>
+                )}/>
                 <Route path="/users" component={UserSearch}/>
                 <Route path="/jams/edit" component={EditJams} />
                 <Route path="/jams" component={Jams} />

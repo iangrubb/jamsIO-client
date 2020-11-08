@@ -1,9 +1,12 @@
 import React from 'react'
 
-const UserShow = () => {
+import styled from 'styled-components'
+
+const UserShow = ({ id }) => {
     return (
         <div>
-            
+            <h2>User Name</h2>
+            <h3>User id: {id}</h3>
         </div>
     )
 }
