@@ -4,26 +4,58 @@ import { Link } from 'react-router-dom'
 
 import styled from 'styled-components'
 
+import { Button } from '../../styles/components'
+
 
 // Display name, jams info summary, whether they follow / are followed by currentUser, last update
 
-const UserInfo = ({ id, username, followerCount, followeeCount }) => {
+const UserInfo = ({ id, username, followerCount, followeeCount, followedByUser, followsUser, followUser, unfollowUser }) => {
+
     return (
-        <StyledLink to={`/users/${id}`}>
+        
             <Container>
-                <h3>{username}</h3>
-                <Bar />
-                <Detail>Followed by {followeeCount}</Detail>
-                <Detail>Following {followeeCount}</Detail>
+                <StyledLink to={`/users/${id}`}>
+                    <Name>{username}</Name>
+                </StyledLink>
+
+                <StyledLink to={`/users/${id}/following`}>
+                    <Detail>{followsUser ? `Following you and ${followeeCount - 1} other users` : `Following ${followeeCount} users`}</Detail>
+                </StyledLink>
+
+                <StyledLink to={`/users/${id}/followers`}>
+                    <Detail>{followedByUser ? `Followed you and ${followerCount - 1} other users` : `Followed by ${followerCount} users`}</Detail>
+                </StyledLink>
+
+                {followedByUser ?
+                <FollowButton>Unfollow</FollowButton>
+                :
+                <FollowButton onClick={followUser}>Follow</FollowButton>
+                }
+                
+                
             </Container>
-        </StyledLink>
+
     )
 }
 
 export default UserInfo
 
+
+
 const StyledLink = styled(Link)`
     text-decoration: none;
+    width: fit-content;
+`
+
+const Name = styled.h3`
+    padding: 0 0 4px 0;
+    box-shadow: 0 2px 0 var(--green);
+    margin: 0 0 12px 0;
+`
+
+const FollowButton = styled(Button)`
+    width: fit-content;
+    margin: 4px 0;
 `
 
 const Container = styled.div`
@@ -34,29 +66,13 @@ const Container = styled.div`
     border-radius: 8px;
 
     margin: 24px 0 0 0;
-    padding: 8px;
-
-    cursor: pointer;
-
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    padding: 16px;
 
 
-    &:hover {
-        box-shadow: 2px 2px 0 var(--green);
-        transform: translate(-1px, -2px);
-    }
-
-`
-
-const Bar = styled.div`
-    margin: 0 0 6px 0;
-    width: 64px;
-    height: 2px;
-    background: var(--green);
 `
 
 const Detail = styled.p`
-    margin: 0 0 2px 4px;
+    margin: 0 0 4px 4px;
     color: var(--white);
     font-size: 15px;
 

@@ -27,7 +27,7 @@ function App() {
 
   const determineAccess = () => {
     if (user && tokensAvailable) {
-      return <MainSite logout={logout} />
+      return <MainSite logout={logout} user={user} />
     } else if (!user && !userLoading) {
       return <Redirect to="/welcome" />
     } else {

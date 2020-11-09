@@ -1,10 +1,9 @@
 import React from 'react'
 
-// One component for two routes: user/:id/followers and user/:id/followees
-
-const UserSocial = () => {
+const UserSocial = ({id, mode}) => {
     return (
         <div>
+            <h2>The {mode} for user {id}</h2>
             
         </div>
     )

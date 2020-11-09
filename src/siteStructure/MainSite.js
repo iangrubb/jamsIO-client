@@ -10,17 +10,24 @@ import Jams from '../pages/dashboard/Jams'
 import EditJams from '../pages/dashboard/EditJams'
 import UserSearch from '../pages/browse/UserSearch'
 import UserShow from '../pages/browse/UserShow'
+import UserSocial from '../pages/browse/UserSocial'
 
-const MainSite = ({ logout }) => {
+const MainSite = ({ logout, user }) => {
     return (
         <>
         <NavBar logout={logout} />
         <Main>
             <Switch>
+                <Route path="/users/:id/followers" render={props => (
+                    <UserSocial id={props.match.params.id} mode="followers"/>
+                )}/>
+                <Route path="/users/:id/following" render={props => (
+                    <UserSocial id={props.match.params.id} mode="following"/>
+                )}/>
                 <Route path="/users/:id" render={props => (
                     <UserShow id={props.match.params.id}/>
                 )}/>
-                <Route path="/users" component={UserSearch}/>
+                <Route path="/users" render={()=><UserSearch currentUser={user} />}/>
                 <Route path="/jams/edit" component={EditJams} />
                 <Route path="/jams" component={Jams} />
                 <Route path="/" component={Dashboard} />   
