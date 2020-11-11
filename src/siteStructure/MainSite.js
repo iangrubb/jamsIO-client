@@ -19,10 +19,10 @@ const MainSite = ({ logout, user }) => {
         <Main>
             <Switch>
                 <Route path="/users/:id/followers" render={props => (
-                    <UserSocial id={props.match.params.id} mode="followers"/>
+                    <UserSocial id={props.match.params.id} currentUser={user} mode="followers"/>
                 )}/>
                 <Route path="/users/:id/following" render={props => (
-                    <UserSocial id={props.match.params.id} mode="following"/>
+                    <UserSocial id={props.match.params.id} currentUser={user} mode="following"/>
                 )}/>
                 <Route path="/users/:id" render={props => (
                     <UserShow id={props.match.params.id}/>

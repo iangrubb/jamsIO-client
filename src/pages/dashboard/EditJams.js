@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 import { Button } from '../../styles/components'
 
-import { gql, useQuery, useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
+import { gql, useQuery, useLazyQuery, useMutation } from '@apollo/client';
 
 import SearchForm from '../../components/forms/SearchForm'
 import TrackListing from '../../components/display/TrackListing'

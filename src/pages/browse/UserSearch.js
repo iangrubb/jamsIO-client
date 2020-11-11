@@ -25,35 +25,11 @@ const BROWSE_USERS = gql`
     }
 `
 
-const FOLLOW_USER = gql`
-    mutation FollowUser($followeeId: ID!) {
-        followUser(followeeId: $followeeId) {
-            id
-        }
-    }
-`
-
-// TO DO
-
-// 2. Display who is followed by and follows the current user
-
-// 3. Pass down unfollow action to card
-
-// 4. Conditionally render correct action
-
-// 5. Update state automatically in response to either click
-
-
-
 const UserSearch = ({ currentUser }) => {
 
     const { data, loading, refetch } = useQuery(BROWSE_USERS, {variables: {currentUserId: currentUser.id}})
 
     const refetchUsers = searchTerm => refetch({ searchTerm, currentUserId: currentUser.id })
-
-    const [ followUser ] = useMutation(FOLLOW_USER, {onCompleted: console.log})
-
-
 
 
 
@@ -62,8 +38,6 @@ const UserSearch = ({ currentUser }) => {
     if (loading) return <div>Loading...</div>
 
     const {currentUser: { followeeCount, followerCount }} = data
-
-    console.log(data)
 
     return (
         <div>
@@ -75,11 +49,7 @@ const UserSearch = ({ currentUser }) => {
 
             <h2>Browse Users</h2>
             <SearchForm submitData={refetchUsers} />
-            {data ?
-            users.map(user => (
-                <UserInfo key={user.id} {...user} followUser={()=>followUser({variables: {followeeId: user.id}})}/>
-            ))
-            : null}
+            {data ? users.map(user => <UserInfo key={user.id} {...user} /> ) : null}
         </div>
     )
 }

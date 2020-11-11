@@ -2,17 +2,43 @@ import React from 'react'
 
 import { Link } from 'react-router-dom'
 
+import { gql, useMutation } from '@apollo/client';
+
+
 import styled from 'styled-components'
 
 import { Button } from '../../styles/components'
 
+const FOLLOW_USER = gql`
+    mutation FollowUser($followeeId: ID!) {
+        followUser(followeeId: $followeeId) {
+            id
+        }
+    }
+`
 
-// Display name, jams info summary, whether they follow / are followed by currentUser, last update
+const UNFOLLOW_USER = gql`
+    mutation UnfollowUser($followeeId: ID!) {
+        unfollowUser(followeeId: $followeeId) {
+            id
+        }
+    }
+`
 
-const UserInfo = ({ id, username, followerCount, followeeCount, followedByUser, followsUser, followUser, unfollowUser }) => {
+
+
+// Re-render in response to action:
+  // Change the data for the followed / unfollowed user
+  // Update current user's followee count.
+  // Do we also update that the current user's list of followed users on the user show page? (Write that page first to test)
+
+const UserInfo = ({ id, username, followerCount, followeeCount, followedByUser, followsUser }) => {
+
+    const [ followUser ] = useMutation(FOLLOW_USER, {onCompleted: console.log, update: cache => console.log(cache)})
+
+    const [ unfollowUser ] = useMutation(UNFOLLOW_USER, {onCompleted: console.log})
 
     return (
-        
             <Container>
                 <StyledLink to={`/users/${id}`}>
                     <Name>{username}</Name>
@@ -27,14 +53,11 @@ const UserInfo = ({ id, username, followerCount, followeeCount, followedByUser, 
                 </StyledLink>
 
                 {followedByUser ?
-                <FollowButton>Unfollow</FollowButton>
+                <FollowButton onClick={()=>unfollowUser({variables: {followeeId: id}})}>Unfollow</FollowButton>
                 :
-                <FollowButton onClick={followUser}>Follow</FollowButton>
-                }
-                
-                
+                <FollowButton onClick={()=>followUser({variables: {followeeId: id}})}>Follow</FollowButton>
+                }    
             </Container>
-
     )
 }
 
