@@ -18,7 +18,7 @@ const BROWSE_USERS = gql`
             followedByUser(userId: $currentUserId)
             followsUser(userId: $currentUserId)
         }
-        currentUser {
+        findUser(userId: $currentUserId) {
             followerCount
             followeeCount
         }
@@ -37,7 +37,7 @@ const UserSearch = ({ currentUser }) => {
 
     if (loading) return <div>Loading...</div>
 
-    const {currentUser: { followeeCount, followerCount }} = data
+    const {findUser: { followeeCount, followerCount }} = data
 
     return (
         <div>

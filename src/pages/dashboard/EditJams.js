@@ -26,8 +26,9 @@ const TRACK_INFO = gql`
 `
 
 const CURRENT_JAMS = gql`
-    query {
-        currentUser {
+    query CurrentJams($currentUserId: ID!) {
+        findUser(userId: $currentUserId) {
+            id
             currentJams {
                 ...TrackInfo
             }
@@ -61,7 +62,7 @@ const UPDATE_JAMS = gql`
 `
 
 
-const EditJams = () => {
+const EditJams = ({ currentUser }) => {
 
     // Modified Jam Update Logic
 
@@ -79,11 +80,12 @@ const EditJams = () => {
     // Initial Jam Fetching
 
     const jamsResponse = useQuery(CURRENT_JAMS, {
-        onCompleted: ({currentUser: { currentJams }}) => setModifiedJams(currentJams),
+        variables: {currentUserId: currentUser.id},
+        onCompleted: ({findUser: { currentJams }}) => setModifiedJams(currentJams),
         onError: console.log
     })
 
-    const previousJams = jamsResponse.data?.currentUser?.currentJams
+    const previousJams = jamsResponse.data?.findUser?.currentJams
 
     const additions = modifiedJams?.filter(track => !previousJams.find(t => t.id === track.id))
 
@@ -110,17 +112,30 @@ const EditJams = () => {
 
             const { additions, removals } = updateJams
 
-            const { currentUser: { currentJams } } = cache.readQuery({ query: CURRENT_JAMS })
+            const CURRENT_JAMS_FRAGMENT = gql`
+                fragment CurrentJams on User {
+                    currentJams {
+                        ...TrackInfo
+                    }
+                }
+                ${TRACK_INFO}
+            `
+
+            const { currentJams } = cache.readFragment({
+                id: `User:${currentUser.id}`,
+                fragmentName: "CurrentJams",
+                fragment: CURRENT_JAMS_FRAGMENT,
+            })
 
             const filteredJams = currentJams.filter(j => !removals.find(r => r.id === j.id))
 
             const updatedJams = [...filteredJams, ...additions]
 
-            cache.writeQuery({
-                query: CURRENT_JAMS,
-                data: {
-                    currentUser: {currentJams: updatedJams}
-                }
+            cache.writeFragment({
+                id: `User:${currentUser.id}`,
+                fragment: CURRENT_JAMS_FRAGMENT,
+                fragmentName: "CurrentJams",
+                data: {currentJams: updatedJams}
             })
         }
     })

@@ -30,11 +30,23 @@ const UNFOLLOW_USER = gql`
 // Re-render in response to action:
   // Change the data for the followed / unfollowed user
   // Update current user's followee count.
-  // Do we also update that the current user's list of followed users on the user show page? (Write that page first to test)
+  // Update current user's list of followed users on the user show page
+
+  // Ideally these updates would target a specific user, rather than the currentUser query result. I don't want to be updating a bunch of queries.
+    // May have to use findUser over currentUser query in general
+
+
 
 const UserInfo = ({ id, username, followerCount, followeeCount, followedByUser, followsUser }) => {
 
-    const [ followUser ] = useMutation(FOLLOW_USER, {onCompleted: console.log, update: cache => console.log(cache)})
+    const [ followUser ] = useMutation(FOLLOW_USER, {
+        update: (cache, {data: {followUser: { id }}}) => {
+
+            console.log(cache, id)
+            // Update CURRENT_USER followee and follower count
+
+        }
+    })
 
     const [ unfollowUser ] = useMutation(UNFOLLOW_USER, {onCompleted: console.log})
 

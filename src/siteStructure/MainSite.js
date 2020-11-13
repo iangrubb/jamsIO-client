@@ -28,7 +28,7 @@ const MainSite = ({ logout, user }) => {
                     <UserShow id={props.match.params.id}/>
                 )}/>
                 <Route path="/users" render={()=><UserSearch currentUser={user} />}/>
-                <Route path="/jams/edit" component={EditJams} />
+                <Route path="/jams/edit" component={()=><EditJams currentUser={user} />} />
                 <Route path="/jams" component={Jams} />
                 <Route path="/" component={Dashboard} />   
             </Switch>

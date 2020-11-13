@@ -18,6 +18,7 @@ const DISPLAY_USER_FRAGMENT = gql`
 const USER_FOLLOWING = gql`
     query getFollowing($userId: ID!, $currentUserId: ID!) {
         findUser(userId: $userId) {
+            id
             username
             followees {
                 ...DisplayUser
@@ -30,6 +31,7 @@ const USER_FOLLOWING = gql`
 const USER_FOLLOWERS = gql`
     query getFollowers($userId: ID!, $currentUserId: ID!) {
         findUser(userId: $userId) {
+            id
             username
             followers {
                 ...DisplayUser
@@ -47,13 +49,9 @@ const UserSocial = ({id, mode, currentUser}) => {
 
     if (loading) return <div>Loading...</div>
 
-    console.log(data)
-
     const {findUser: {followees, followers, username}} = data
 
     const users = mode === "followers" ? followers : followees
-
-    console.log(username)
 
     const renderMessage = () => {
         if (users.length === 0) {
